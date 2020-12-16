@@ -12,7 +12,7 @@ import com.techelevator.tenmo.models.Balance;
 
 public class TransferService {
 	
-	private static String AUTH_TOKEN = "";
+	public static String AUTH_TOKEN = "";
 	private String BASE_URL;
 	private RestTemplate restTemplate = new RestTemplate();
 	
