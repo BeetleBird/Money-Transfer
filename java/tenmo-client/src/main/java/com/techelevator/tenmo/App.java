@@ -124,11 +124,10 @@ public class App {
 					
 					transferService.addTransfer(transfer);
 					
-					//TODO: make sure they have enough money
 					//TODO: save the new amounts to the users
 				}
 				else {
-					System.out.println("You don't have enough money");
+					System.out.println("You don't have enough money to send this amount");
 				}
 				
 			}
