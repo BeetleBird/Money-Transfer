@@ -62,7 +62,19 @@ public class TransferController {
 	@RequestMapping(path="/get-transfers-user", method=RequestMethod.GET)
 	public List<Transfer> getTransfersById(Principal principal) {
 		int id = userDao.findIdByUsername(principal.getName());
-		return transferDAO.getTransfersById(id);
+		List<Transfer> transfers = transferDAO.getTransfersById(id);
+		
+		for (Transfer transfer : transfers) {
+			int senderId = transfer.getAccountFrom();
+			String senderName = userDao.findUsernameById(senderId);
+			transfer.setUsernameFrom(senderName);
+			
+			int receiverId = transfer.getAccountTo();
+			String receiverName = userDao.findUsernameById(receiverId);
+			transfer.setUsernameTo(receiverName);
+		}
+		
+		return transfers;
 		
 	}
 	

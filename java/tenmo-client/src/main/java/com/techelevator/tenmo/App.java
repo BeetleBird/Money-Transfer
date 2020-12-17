@@ -83,12 +83,13 @@ public class App {
 
 	private void viewCurrentBalance() {
 		Balance balance = transferService.getBalance();
-		System.out.println("Current Balance: " + balance.getBalance());
+		System.out.println("Your current account balance is: $" + balance.getBalance());
 
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+		Transfer[] transfers = transferService.listTransfersById();
+		printTransfers(transfers);
 
 	}
 
@@ -101,16 +102,21 @@ public class App {
 		User[] users = transferService.listAllUsers();
 		List<Integer> ids = printUsers(users);
 		System.out.println();
-		System.out.println("Please choose a user ID to send bucks to: ");
+		System.out.print("Enter ID of user you are sending to (0 to cancel): ");
 		Scanner scanner = new Scanner(System.in);
 		String inputString = scanner.nextLine();
+		System.out.println();
 	
 		try {
 			int receiverID = Integer.parseInt(inputString);
+			if (receiverID == 0) {
+				return;
+			}
 			if (ids.contains(receiverID)) {
 			
-				System.out.println("Please enter an amount to send");
+				System.out.print("Enter amount: ");
 				inputString = scanner.nextLine();
+				System.out.println();
 				double amount = Double.parseDouble(inputString);
 				
 				if (transferService.getBalance().getBalance() >= amount) {
@@ -208,20 +214,50 @@ public class App {
 	}
 
 	public List<Integer> printUsers(User[] userArray) {
+		// List to keep track of valid User ID's
 		List<Integer> ids = new ArrayList<Integer>();
 		
 		if (userArray != null) {
-			// List to keep track of valid User ID's
-			
 			
 			System.out.println("--------------------------------------------");
 			System.out.println("Users");
+			System.out.println("ID         Name");
 			System.out.println("--------------------------------------------");
 			for (User userArr : userArray) {
 				if (userArr.getId() != currentUser.getUser().getId()) {
 					System.out.println(userArr.toString());
 					ids.add(userArr.getId());
 				}
+			}
+		}
+		
+		return ids;
+	}
+	
+	public List<Integer> printTransfers(Transfer[] transferArray) {
+		// List to keep track of valid Transfer ID's
+		List<Integer> ids = new ArrayList<Integer>();
+		
+		if (transferArray != null) {
+			
+			System.out.println("--------------------------------------------");
+			System.out.println("Transfers");
+			System.out.println("ID          From/To                 Amount");
+			System.out.println("--------------------------------------------");
+			for (Transfer transfer : transferArray) {
+				String fromTo;
+				String name;
+				if (currentUser.getUser().getId() == transfer.getAccountFrom()) {
+					fromTo = "To:   ";
+					name = transfer.getUsernameTo();
+				}
+				else {
+					fromTo = "From: ";
+					name = transfer.getUsernameFrom();
+				}
+				System.out.println(transfer.getTransferID() + "          " + fromTo + name + "                 " + transfer.getAmount());
+				
+				ids.add(transfer.getTransferID());
 			}
 		}
 		
