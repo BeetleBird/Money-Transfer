@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.controller;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.techelevator.tenmo.dao.TransferDAO;
 import com.techelevator.tenmo.dao.UserDAO;
 import com.techelevator.tenmo.model.Balance;
+import com.techelevator.tenmo.model.User;
 
 @RestController
 @PreAuthorize("isAuthenticated()")
@@ -35,4 +37,11 @@ public class TransferController {
 		
 	}
 
+	@RequestMapping(path="/get-users", method=RequestMethod.GET)
+	public List<User> listAllUsers() {
+		return userDao.findAll();
+		
+	}
+	
+	
 }
