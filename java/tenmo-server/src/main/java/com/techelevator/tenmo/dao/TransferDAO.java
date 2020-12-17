@@ -13,4 +13,10 @@ public interface TransferDAO {
 	
 	public List<Transfer> getTransfers();
 
+	public void addAmount(int userId, double amount); 
+	
+	public void subtractAmount(int userId, double amount);
+	
+	public List<Transfer> getTransfersById(int userId);
+	
 }

@@ -59,5 +59,12 @@ public class TransferController {
 		return transferDAO.makeTransfer(transfer);
 	}
 	
+	@RequestMapping(path="/get-transfers-user", method=RequestMethod.GET)
+	public List<Transfer> getTransfersById(Principal principal) {
+		int id = userDao.findIdByUsername(principal.getName());
+		return transferDAO.getTransfersById(id);
+		
+	}
+	
 	
 }

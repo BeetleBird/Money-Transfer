@@ -1,19 +1,16 @@
 package com.techelevator.tenmo.services;
 
-import java.util.List;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import com.techelevator.tenmo.models.User;
 import com.techelevator.tenmo.models.Balance;
 import com.techelevator.tenmo.models.Transfer;
+import com.techelevator.tenmo.models.User;
 
 public class TransferService {
 
@@ -38,6 +35,20 @@ public class TransferService {
 		return usersArray;
 
 	}
+	
+	public Transfer[] listTransfersById() {
+		Transfer[] transferArray = null;
+		try {
+			transferArray = restTemplate.exchange(BASE_URL + "/get-transfers-user", HttpMethod.GET, makeAuthEntity(), Transfer[].class)
+					.getBody();
+		} catch (RestClientResponseException ex) {
+			System.out.println(ex.getRawStatusCode() + " " + ex.getStatusText());
+		} catch (ResourceAccessException ex) {
+			System.out.println(ex.getMessage());
+		}
+		return transferArray;
+	}
+	
 
 	public Balance getBalance() {
 		Balance balance = new Balance();
@@ -56,7 +67,7 @@ public class TransferService {
 	}
 	
 	public Transfer addTransfer(Transfer transfer) {
-		
+	
 		try {
 			transfer = restTemplate.exchange(BASE_URL + "/transfer", HttpMethod.POST, makeTransferEntity(transfer),
 					Transfer.class).getBody();
