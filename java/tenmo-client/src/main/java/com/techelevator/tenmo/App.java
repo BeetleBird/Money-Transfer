@@ -89,7 +89,31 @@ public class App {
 
 	private void viewTransferHistory() {
 		Transfer[] transfers = transferService.listTransfersById();
-		printTransfers(transfers);
+
+		List<Integer> list = printTransfers(transfers);
+
+		System.out.println("Please enter transfer ID to view details (0 to cancel): ");
+		Scanner scanner = new Scanner(System.in);
+		String inputString = scanner.nextLine();
+
+		try {
+			int userInput = Integer.parseInt(inputString);
+			if (userInput == 0) {
+				return;
+			}
+			if (list.contains(userInput)) {
+				for (Transfer transfer : transfers) {
+					if (transfer.getTransferID() == userInput) {
+						transferDetails(transfer);
+						return;
+					}
+				}
+			} else {
+				System.out.println("Invalid Id Try Again ");
+			}
+		} catch (NumberFormatException ex) {
+
+		}
 
 	}
 
@@ -106,41 +130,38 @@ public class App {
 		Scanner scanner = new Scanner(System.in);
 		String inputString = scanner.nextLine();
 		System.out.println();
-	
+
 		try {
 			int receiverID = Integer.parseInt(inputString);
 			if (receiverID == 0) {
 				return;
 			}
 			if (ids.contains(receiverID)) {
-			
+
 				System.out.print("Enter amount: ");
 				inputString = scanner.nextLine();
 				System.out.println();
 				double amount = Double.parseDouble(inputString);
-				
+
 				if (transferService.getBalance().getBalance() >= amount) {
-				
+
 					Transfer transfer = new Transfer();
 					transfer.setAccountFrom(currentUser.getUser().getId());
 					transfer.setAccountTo(receiverID);
 					transfer.setAmount(amount);
 					transfer.setTransferStatusID(2);
 					transfer.setTransferTypeID(2);
-					
+
 					transferService.addTransfer(transfer);
-					
-					//TODO: save the new amounts to the users
-				}
-				else {
+
+				} else {
 					System.out.println("You don't have enough money to send this amount");
 				}
-				
-			}
-			else {
+
+			} else {
 				System.out.println("This is not a valid ID");
 			}
-			
+
 		} catch (NumberFormatException ex) {
 			System.out.println("Please enter a number");
 		}
@@ -216,9 +237,9 @@ public class App {
 	public List<Integer> printUsers(User[] userArray) {
 		// List to keep track of valid User ID's
 		List<Integer> ids = new ArrayList<Integer>();
-		
+
 		if (userArray != null) {
-			
+
 			System.out.println("--------------------------------------------");
 			System.out.println("Users");
 			System.out.println("ID         Name");
@@ -230,16 +251,16 @@ public class App {
 				}
 			}
 		}
-		
+
 		return ids;
 	}
-	
+
 	public List<Integer> printTransfers(Transfer[] transferArray) {
 		// List to keep track of valid Transfer ID's
 		List<Integer> ids = new ArrayList<Integer>();
-		
+
 		if (transferArray != null) {
-			
+
 			System.out.println("--------------------------------------------");
 			System.out.println("Transfers");
 			System.out.println("ID          From/To                 Amount");
@@ -250,18 +271,31 @@ public class App {
 				if (currentUser.getUser().getId() == transfer.getAccountFrom()) {
 					fromTo = "To:   ";
 					name = transfer.getUsernameTo();
-				}
-				else {
+				} else {
 					fromTo = "From: ";
 					name = transfer.getUsernameFrom();
 				}
-				System.out.println(transfer.getTransferID() + "          " + fromTo + name + "                 " + transfer.getAmount());
-				
+				System.out.println(transfer.getTransferID() + "          " + fromTo + name + "                 "
+						+ transfer.getAmount());
+
 				ids.add(transfer.getTransferID());
 			}
 		}
-		
+
 		return ids;
+	}
+
+	public void transferDetails(Transfer transfer) {
+		System.out.println("--------------------------");
+		System.out.println("Transfer Details");
+		System.out.println("--------------------------");
+		System.out.println("Id: " + transfer.getTransferID());
+		System.out.println("From: " + transfer.getUsernameFrom());
+		System.out.println("To: " + transfer.getUsernameTo());
+		System.out.println("Type: Send");
+		System.out.println("Status: Approved");
+		System.out.println("Amount: $" + transfer.getAmount());
+
 	}
 
 }
