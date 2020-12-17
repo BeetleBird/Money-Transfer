@@ -1,7 +1,12 @@
 package com.techelevator.tenmo;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 import com.techelevator.tenmo.models.AuthenticatedUser;
 import com.techelevator.tenmo.models.Balance;
+import com.techelevator.tenmo.models.Transfer;
 import com.techelevator.tenmo.models.User;
 import com.techelevator.tenmo.models.UserCredentials;
 import com.techelevator.tenmo.services.AuthenticationService;
@@ -93,9 +98,47 @@ public class App {
 	}
 
 	private void sendBucks() {
-	User[] users = transferService.listAllUsers();
-	printUsers(users);
+		User[] users = transferService.listAllUsers();
+		List<Integer> ids = printUsers(users);
+		System.out.println();
+		System.out.println("Please choose a user ID to send bucks to: ");
+		Scanner scanner = new Scanner(System.in);
+		String inputString = scanner.nextLine();
 	
+		try {
+			int receiverID = Integer.parseInt(inputString);
+			if (ids.contains(receiverID)) {
+			
+				System.out.println("Please enter an amount to send");
+				inputString = scanner.nextLine();
+				double amount = Double.parseDouble(inputString);
+				
+				if (transferService.getBalance().getBalance() >= amount) {
+				
+					Transfer transfer = new Transfer();
+					transfer.setAccountFrom(currentUser.getUser().getId());
+					transfer.setAccountTo(receiverID);
+					transfer.setAmount(amount);
+					transfer.setTransferStatusID(2);
+					transfer.setTransferTypeID(2);
+					
+					transferService.addTransfer(transfer);
+					
+					//TODO: make sure they have enough money
+					//TODO: save the new amounts to the users
+				}
+				else {
+					System.out.println("You don't have enough money");
+				}
+				
+			}
+			else {
+				System.out.println("This is not a valid ID");
+			}
+			
+		} catch (NumberFormatException ex) {
+			System.out.println("Please enter a number");
+		}
 	}
 
 	private void requestBucks() {
@@ -165,16 +208,25 @@ public class App {
 		return new UserCredentials(username, password);
 	}
 
-	public void printUsers(User[] userArray) {
-
+	public List<Integer> printUsers(User[] userArray) {
+		List<Integer> ids = new ArrayList<Integer>();
+		
 		if (userArray != null) {
+			// List to keep track of valid User ID's
+			
+			
 			System.out.println("--------------------------------------------");
 			System.out.println("Users");
 			System.out.println("--------------------------------------------");
 			for (User userArr : userArray) {
-				System.out.println(userArr.toString());
+				if (userArr.getId() != currentUser.getUser().getId()) {
+					System.out.println(userArr.toString());
+					ids.add(userArr.getId());
+				}
 			}
 		}
+		
+		return ids;
 	}
 
 }
