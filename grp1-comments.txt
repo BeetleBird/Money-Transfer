@@ -1,0 +1,26 @@
+Very awesome overall, not much to complain about.
+
+1. Your logic to handle the balance check is currently in the
+client:
+
+=========================
+if (transferService.getBalance().getBalance() >= amount) {
+	Transfer transfer = new Transfer();
+	transfer.setAccountFrom(currentUser.getUser().getId());
+	transfer.setAccountTo(receiverID);
+	transfer.setAmount(amount);
+	transfer.setTransferStatusID(2);
+	transfer.setTransferTypeID(2);
+	transferService.addTransfer(transfer);
+} else {
+	System.out.println("You don't have enough money to send this amount");
+}
+=========================
+
+Ideally we should do this on the server. If the server determines that
+there is insufficient balance, then it should throw an exception, that
+the client can catch and then display the message. 
+
+Doing it this way also prevents you from having to do 2 API calls to the 
+server. 
+
